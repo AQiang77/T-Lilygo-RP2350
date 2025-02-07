@@ -256,7 +256,7 @@ void gui_Main_interface(lv_ui *ui)
 
     // Write codes screen_label_device
     ui->screen_label_device = lv_label_create(ui->screen_cont_logo);
-    lv_label_set_text(ui->screen_label_device, "LILYGO\nT-Pico2\nESP32C3");
+    lv_label_set_text(ui->screen_label_device, "LILYGO\nT-Pico2\nESP32C6");
     lv_label_set_long_mode(ui->screen_label_device, LV_LABEL_LONG_WRAP);
     lv_obj_set_pos(ui->screen_label_device, 120, 10);
     lv_obj_set_size(ui->screen_label_device, 90, 100);
@@ -268,7 +268,7 @@ void gui_Main_interface(lv_ui *ui)
     lv_obj_set_style_text_font(ui->screen_label_device, &lv_font_Acme_Regular_16, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui->screen_label_device, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_letter_space(ui->screen_label_device, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_line_space(ui->screen_label_device, 18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_line_space(ui->screen_label_device, 16, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui->screen_label_device, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui->screen_label_device, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui->screen_label_device, lv_color_hex(0x2d0081), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -276,6 +276,11 @@ void gui_Main_interface(lv_ui *ui)
     lv_obj_set_style_bg_grad_color(ui->screen_label_device, lv_color_hex(0x7a2a2a), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_main_stop(ui->screen_label_device, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_stop(ui->screen_label_device, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui->screen_label_device, 10, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui->screen_label_device, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui->screen_label_device, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui->screen_label_device, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_width(ui->screen_label_device, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
 
     // Write codes screen_img_lilygo
     ui->screen_img_lilygo = lv_img_create(ui->screen_cont_logo);

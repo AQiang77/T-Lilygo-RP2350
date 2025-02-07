@@ -17,7 +17,7 @@ extern lv_ui ui;
 extern bool bettary_enable;
 extern String wifi_ssid;
 extern String wifi_password;
-extern bool WiFi_reconnect;
+extern bool wifi_connect;
 
 static void screen_imgbtn_set_event_handler(lv_event_t *e);
 void screen_sw_Battery_event_handler(lv_event_t *e);
@@ -170,7 +170,7 @@ void screen_btn_select_event_handler(lv_event_t *e)
         Serial.println("select");
         wifi_password = lv_textarea_get_text(ui.screen_wifi_ta_wifi_password); // 获取文本框内容
         Serial.println("password:" + wifi_password);
-        WiFi_reconnect = true;
+        wifi_connect = true;
         lv_scr_load(ui.screen_set);
         ui.screen_wifi_lable_wait_connect = lv_label_create(ui.screen_set);
         lv_label_set_text(ui.screen_wifi_lable_wait_connect, "wait wifi connect...");

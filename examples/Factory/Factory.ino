@@ -27,6 +27,8 @@
 using namespace ace_button;
 
 #define XL9535_I2C_ADDR 0x24
+#define Default_WiFi_SSID "xinyuandianzi"
+#define Default_WiFi_PASSWORD "AA15994823428"
 
 #if (BOARD_SPI_MISO != TFT_MISO) || (BOARD_SPI_MOSI != TFT_MOSI) || \
     (BOARD_SPI_SCK != TFT_SCLK) || (TFT_CS != BOARD_TFT_CS) ||      \
@@ -57,20 +59,19 @@ bool Expand_status, PMU_status, Touch_status, SD_status, WiFi_status, Screen_sta
 static bool isBacklightOn = true;
 static bool manualOff = false;
 bool WiFi_connect_status = false;
-bool WiFi_reconnect = false;
+bool wifi_connect = false;
 bool bettary_enable = false;
 
-String wifi_ssid = "";
-String wifi_password = "";
+String wifi_ssid = Default_WiFi_SSID;
+String wifi_password = Default_WiFi_PASSWORD;
 const int time_zone = 8;
-const char* server1 = "ntp.sjtu.edu.cn";
-const char* server2 = "cn.ntp.org.cn";
+const char *server1 = "ntp.sjtu.edu.cn";
+const char *server2 = "cn.ntp.org.cn";
 
 uint16_t max_voltage = 3856;
 uint16_t min_voltage = 0;
 uint16_t voltage_step_size = 38;
 uint8_t percentage_voltage = 0;
-
 
 /*************************/
 // Object declaration
@@ -113,31 +114,12 @@ Scheduler runner;
 void setup()
 {
     Serial.begin(115200);
-    delay(1500);
 
     // uint32_t freq = clock_get_hz(clk_sys);
     // Serial.printf("CPU Freq: %lu MHz\n", freq / 1000 / 1000);
     // Serial.printf("PSRAM Size: %d\r\n", rp2040.getPSRAMSize());
 
     Module_init();
-
-    runner.init();
-
-    time_info.tm_year = 2024;
-    time_info.tm_mon = 0;
-    time_info.tm_mday = 1;
-    time_info.tm_hour = 0;
-    time_info.tm_min = 0;
-    time_info.tm_sec = 0;
-
-    strcpy(week, "Mon");
-    strcpy(str_mon, "Jan");
-
-    runner.addTask(t1);
-    runner.addTask(t2);
-    delay(500);
-    t1.enable();
-    t2.enable();
 
     lv_init();
     lv_disp_draw_buf_init(&disp_buf, lv_disp_buf, NULL, LV_BUFFER_SIZE);
@@ -155,39 +137,69 @@ void setup()
     indev_drv.read_cb = lv_touchpad_read_callback;
     lv_indev_drv_register(&indev_drv);
 
-    Check_Moudle_gui(&ui);
-    // Serial.println("gui_Main_interface Start...");
-    int thisNet, numssid;
-    numssid = WiFi_AT.scanNetworks();
-    if (numssid > 0)
-    {
-        for (thisNet = 0; thisNet < numssid; thisNet++)
-        {
-            wifi_ssid_buf += WiFi_AT.SSID(thisNet);
-            wifi_ssid_buf += "\n";
-        }
-        Serial.println(wifi_ssid_buf);
-    }
-    else{
-        Serial.println("No SSID found");
-    }
-    gui_Main_interface(&ui);
-    gui_Set_interface(&ui);
-    WIFI_input_gui(&ui);
-    pinMode(BOARD_WIFI_AT_WAKEUP, OUTPUT);
-    digitalWrite(BOARD_WIFI_AT_WAKEUP, HIGH);
-    delay(300);
-    if(esp_sleep_set(2, BOARD_WIFI_AT_WAKEUP, 0)) // wakeup_source = 2,GPIO wakeup resoure: io22 LOW
-    {
-        Serial.println("esp_sleep_set success");
-    }
-    else
-    {
-        Serial.println("esp_sleep_set fail");
-    }
-    WiFi_AT.sleepMode(WIFI_LIGHT_SLEEP);
+    time_info.tm_year = 2024;
+    time_info.tm_mon = 0;
+    time_info.tm_mday = 1;
+    time_info.tm_hour = 0;
+    time_info.tm_min = 0;
+    time_info.tm_sec = 0;
 
-    lv_scr_load(ui.screen);
+    strcpy(week, "Mon");
+    strcpy(str_mon, "Jan");
+
+    runner.init();
+
+    runner.addTask(t1);
+    runner.addTask(t2);
+    delay(500);
+    t1.enable();
+    t2.enable();
+
+    if (WiFi_status)
+    {
+        int thisNet, numssid;
+        numssid = WiFi_AT.scanNetworks();
+        if (numssid > 0)
+        {
+            for (thisNet = 0; thisNet < numssid; thisNet++)
+            {
+                wifi_ssid_buf += WiFi_AT.SSID(thisNet);
+                wifi_ssid_buf += "\n";
+            }
+            Serial.println(wifi_ssid_buf);
+            if (wifi_ssid_buf.indexOf(Default_WiFi_SSID) != -1)
+            {
+                wifi_connect = true;
+            }
+        }
+        else
+        {
+            Serial.println("No SSID found");
+        }
+
+        pinMode(BOARD_WIFI_AT_WAKEUP, OUTPUT);
+        digitalWrite(BOARD_WIFI_AT_WAKEUP, HIGH);
+        if (esp_sleep_set(2, BOARD_WIFI_AT_WAKEUP, 0)) // wakeup_source = 2,GPIO wakeup resoure: io22 LOW
+        {
+            Serial.println("esp_sleep_set success");
+        }
+        else
+        {
+            Serial.println("esp_sleep_set fail");
+        }
+        WiFi_AT.sleepMode(WIFI_LIGHT_SLEEP);
+    }
+
+    if (Touch_status)
+    {
+        Check_Moudle_gui(&ui);
+        gui_Main_interface(&ui);
+        gui_Set_interface(&ui);
+        WIFI_input_gui(&ui);
+
+        delay(50);
+        lv_scr_load(ui.screen);
+    }
 }
 
 void loop()
@@ -208,7 +220,7 @@ bool esp_sleep_set(uint8_t wakeup_source, uint8_t pin, uint8_t mode) // wakeup_s
     }
     else
     {
-        return false; 
+        return false;
     }
 }
 
@@ -232,14 +244,23 @@ bool esp_ntp_set(uint8_t enable, uint8_t timezone, const char *server1, const ch
 bool esp_get_ntp_time()
 {
     Serial.println("esp_get_ntp_time");
+    String response;
     char buffer[64] = {0};
     snprintf(buffer, 64, "AT+CIPSNTPTIME?\r\n");
     SerialAT.write(buffer);
 
-    String response = SerialAT.readString();
+    unsigned long startTime = millis();
+    while (millis() - startTime < 1000)
+    { // 1秒超时
+        if (SerialAT.available())
+        {
+            response += (char)SerialAT.read();
+        }
+    }
+    // Serial.println(response);
+
     if (response.indexOf("OK") >= 0)
     {
-        // Serial.println(response);
         if (response.indexOf("+CIPSNTPTIME:") >= 0 && !(response.indexOf("1970") >= 0))
         {
             int startIndex = response.indexOf("+CIPSNTPTIME:") + 13;
@@ -250,15 +271,15 @@ bool esp_get_ntp_time()
                    &time_info.tm_sec, &time_info.tm_year);
             Serial.printf("time:%d,%d,%d,%d,%d,%d\n", time_info.tm_year, time_info.tm_mon, time_info.tm_mday, time_info.tm_hour,
                           time_info.tm_min, time_info.tm_sec);
-            Serial.println(String(week)+String(str_mon));
+            Serial.println(String(week) + String(str_mon));
         }
         else
         {
             Serial.println("get time error!");
-            return false; 
+            return false;
         }
     }
-    return true; 
+    return true;
 }
 
 void touchHomeKeyCallback(void *user_data)
@@ -312,25 +333,33 @@ void t1Callback()
 {
     uint8_t static time = 0;
     // Serial.printf("t1 time:%d\n",time);
-    if (WiFi_reconnect == true)
+    if (wifi_connect == true && WiFi_status)
     {
         // WiFi_AT.sleepMode(WIFI_NONE_SLEEP);
         pinMode(BOARD_WIFI_AT_WAKEUP, OUTPUT);
         digitalWrite(BOARD_WIFI_AT_WAKEUP, LOW);
-        delay(500);
-        WiFi_connect();
+        delay(100);
         if (WiFi_AT.status() != WL_CONNECTED)
         {
             WiFi_AT.disconnect(); // to clear the way. not persistent
             WiFi_connect_status = false;
-            WiFi_reconnect = false;
+            wifi_connect = false;
             Serial.println("Connection to WiFi failed.");
             lv_obj_del(ui.screen_wifi_lable_wait_connect);
+
+            WiFi_connect();
+            Serial.print("To access the server, connect with Telnet client to ");
+            Serial.print(ip);
+            Serial.println(" 2323\".");
+            if (esp_ntp_set(1, time_zone, server1, server2))
+            {
+                Serial.println("NTP set success");
+            }
         }
 
         if (WiFi_AT.status() == WL_CONNECTED)
         {
-            WiFi_reconnect = false;
+            wifi_connect = false;
             WiFi_connect_status = true;
 
             ip = WiFi_AT.localIP();
@@ -340,18 +369,18 @@ void t1Callback()
             Serial.println(WiFi_AT.firmwareVersion());
             Serial.println("MAC: " + macAddress());
 
-            Serial.print("To access the server, connect with Telnet client to ");
-            Serial.print(ip);
-            Serial.println(" 2323\".");
+
             lv_obj_del(ui.screen_wifi_lable_wait_connect);
-            if (esp_ntp_set(1, time_zone, server1, server2))
-            {
-                Serial.println("NTP set success");
-            }
-            delay(500);
+
+            delay(50);
+
             if (esp_get_ntp_time())
             {
                 Serial.println("NTP get success");
+            }
+            else
+            {
+                wifi_connect = true;
             }
         }
     }
@@ -361,7 +390,6 @@ void t2Callback()
 {
     lv_task_handler();
     btn1.check();
-    // sleep_us(5000);
     delay(5);
 }
 
@@ -477,7 +505,7 @@ void Module_init()
     Wire.setSCL(BOARD_I2C_SCL);
     Wire.setSDA(BOARD_I2C_SDA);
     Wire.begin();
-    delay(100);
+    delay(50);
 
     pinMode(btns[0], INPUT_PULLUP);
     btn1.init(btns[0], HIGH, 0);
@@ -499,7 +527,7 @@ void Module_init()
     }
 
     extIO.configPort(ExtensionIOXL9555::PORT0, 0x00);
-    delay(100);
+    delay(50);
 
     /***************************/
     // Initialize the SY6970 module
@@ -538,7 +566,7 @@ void Module_init()
     // Initialize the TFT Srceen
     /***************************/
     extIO.digitalWrite(EXPAND_TFT_RST, LOW);
-    delay(100);
+    delay(50);
     extIO.digitalWrite(EXPAND_TFT_RST, HIGH);
 
     extIO.digitalWrite(EXPAND_TFT_BL, LOW);
@@ -548,13 +576,13 @@ void Module_init()
     tft.begin();
     tft.setRotation(3);
     tft.fillScreen(TFT_BLACK);
-    delay(100);
+    delay(50);
 
     /***************************/
     // Initialize the touch Srceen
     /***************************/
     extIO.digitalWrite(EXPAND_TOUCH_RST, LOW);
-    delay(100);
+    delay(50);
     extIO.digitalWrite(EXPAND_TOUCH_RST, HIGH);
 
     touch.setPins(EXPAND_TOUCH_RST, EXPAND_TOUCH_IRQ);
@@ -599,21 +627,21 @@ void Module_init()
     SerialAT.setTX(BOARD_WIFI_TX);
     SerialAT.begin(115200);
     extIO.digitalWrite(EXPAND_WIFI_EN, HIGH);
-    WiFi_status = WiFi_AT.init(SerialAT,BOARD_WIFI_RTS);
+    WiFi_status = WiFi_AT.init(SerialAT);
+
     if (!WiFi_status)
     {
         Serial.println("WiFi Module is not online !");
-        delay(100);
     }
-    else
+
+    if (WiFi_status)
     {
         Serial.println("WiFi Module found !");
-        delay(100);
+        WiFi_AT.disconnect();    // to clear the way. not persistent
+        WiFi_AT.setPersistent(); // set the following WiFi_AT connection as persistent
+        WiFi_AT.endAP();         // to disable default automatic start of persistent AP at startup
+        WiFi_AT.setAutoConnect(false);
     }
-    WiFi_AT.disconnect();    // to clear the way. not persistent
-    WiFi_AT.setPersistent(); // set the following WiFi_AT connection as persistent
-    WiFi_AT.endAP();         // to disable default automatic start of persistent AP at startup
-    WiFi_AT.setAutoConnect(false);
 }
 
 void setBrightness(uint8_t value)

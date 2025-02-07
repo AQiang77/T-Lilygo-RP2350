@@ -24,6 +24,8 @@ void setup()
 
     SerialAT.setTX(BOARD_WIFI_TX);
     SerialAT.setRX(BOARD_WIFI_RX);
+    SerialAT.setRTS(BOARD_WIFI_RTS);
+    SerialAT.setCTS(BOARD_WIFI_CTS);
     SerialAT.begin(115200);  
    
     delay(100);

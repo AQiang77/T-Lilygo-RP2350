@@ -18,3 +18,22 @@
     ```
 3. How to burn firmware?
     After the device is connected to a PC, hold down the RP2350 `BOOT button` and press the `RUN button` to enter the bootloader mode, the RP2350 drive letter will be displayed on the PC. Then find the firmware folder and drag the UF2 suffix file into the RP2350 drive letter. The drive letter will be automatically identified and burned.
+
+
+### V1.1
+#### 1. 软件修改：
+    1、修复WIFI连接失败情况
+    2、更改ESP32 AT固件
+    3、增加默认LVGL时间显示 
+    4、删除LVGL充电⚡图标显示
+
+#### 2.硬件修改：
+    1、增减esp32c3外围部分电容
+
+### V1.2
+#### 1. 软件修改：
+    1、修复重启后找不到esp32-c6模块情况
+    2、增加esp32模块的代码安全判定
+    3、修改UI界面文字esp32c3->esp32c6
+    4、优化启动时间
+    5、上电默认连接wifi(xinyuandianzi)、更新当前时间
