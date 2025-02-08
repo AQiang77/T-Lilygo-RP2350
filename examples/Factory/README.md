@@ -21,6 +21,25 @@
 
 
 ### V1.1
+#### 1. Software modification:
+1. Fix WIFI connection failure
+2. Change ESP32 AT firmware
+3. Add the default LVGL time display
+4. remove LVGL charging ⚡ icon display
+
+#### 2. Hardware Modification:
+1. Increase or decrease the capacitance of esp32c3 peripheral part
+
+### V1.2
+#### 1. Software modification:
+1. Fix the situation that the esp32-c6 module cannot be found after restarting
+2. Add the code safety judgment of esp32 module
+3. modify the UI interface text esp32c3->esp32c6
+4. Optimize startup time
+5. Connect to wifi(xinyuandianzi) by default when powered on and update the current time
+
+
+### V1.1
 #### 1. 软件修改：
     1、修复WIFI连接失败情况
     2、更改ESP32 AT固件
