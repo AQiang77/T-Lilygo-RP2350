@@ -2,9 +2,9 @@
 
 ## 1️⃣Product
 
-| Product        | Combination                                          | Resolution | Size          |
-| -------------- | ---------------------------------------------------- | ---------- | ------------- |
-| T-Pico2        | RP2040(520kB SRAM + 16MB Flash) + ESP32-C6(4M Flash) | 222x480    | IPS 2.33 Inch |
+| Product | Combination                                          | Resolution | Size          |
+| ------- | ---------------------------------------------------- | ---------- | ------------- |
+| T-Pico2 | RP2350(520kB SRAM + 16MB Flash) + ESP32-C6(4M Flash) | 222x480    | IPS 2.33 Inch |
 
 ## 2️⃣Examples
 
@@ -80,7 +80,7 @@ examples/
 3. Download or clone `T-PicoPro` to any location
 4. Copy all folders in [lib folder](./lib/)  to Arduino library folder (e.g. C:\Users\YourName\Documents\Arduino\libraries)
 5. Open ArduinoIDE  ,`Tools` , Look at the picture to choose
-   ![setting](images/ArduinoIDE.jpg)
+   ![setting](image/ArduinoIDE.png)
 6. `T-PicoPro` folder -> `examples` -> `Any Examples`
 7. Select `Port`
 8. Click `upload` , Wait for compilation and writing to complete
@@ -101,51 +101,55 @@ examples/
 
 3. How do I check if the hardware is OK?
    1. Please follow the first step of the **FAQ** and drag `firmware.uf2` in the firmware directory into the disk. The program includes hardware self-test, which can determine whether the hardware is normal.
+   
+4. Why does the serial port not output?
+   1. In the arduino IDE, select `Debug Port:"Serial"` in the tools bar.
+   2. Please open the `DTR` option of the Serial Assistant tool.
 
 ## 7️⃣ PinMap
 The `XL9535` is an external expansion IO port of the `RP2350A`
 
-|  RP2350A       | XL9535 |    |   ESP32-C6   |    TFT         |  SD    |  BUTTON  |  HDMI    |  QWIIC  |  UART1  |  FLASH  |  DRAM  |
-|----------------|--------|----|--------------|----------------|--------|----------|----------|---------|---------|---------|--------|
-|  IO0(SDA)      |        |↔   |              |  PIN47(TP_SDA) |
-|  IO1(SLC)      |        |↔   |              |  PIN48(TP_SCL) |
-|  IO2           |        |↔   |              |                |        |          |          |SDA1     |
-|  IO3           |        |↔   |              |                |        |          |          |SCL1     |
-|                |   IO2  |↔   |              |  PIN50(TP_RST) |
-|                |   IO4  |↔   |              |  PIN49(TP_INT) |
-|                |   IO0  |↔   |              |  PIN35(TF_RST) |
-|                |   IO1  |↔   |              |  PIN35(TF_BL)  |
-|  IO4(MISO)     |        |↔   |              |  PIN11         |SD_MISO |
-|  IO6(SCK)      |        |↔   |              |  PIN8          |SD_SCK|
-|  IO7(MOSI)     |        |↔   |              |  PIN10         |SD_MOSI |
-|  IO8(TFT_CS)   |        |↔   |              |  PIN6          |
-|  IO9(TFT_DC)   |        |↔   |              |  PIN7          |
-|  IO5(SD_CS )   |        |↔   |              |                |SD_CS   |
-|  IO12          |        |↔   |              |                |        |          |CK_N      |
-|  IO13          |        |↔   |              |                |        |          |CK_P      |
-|  IO14          |        |↔   |              |                |        |          |D0_N      |
-|  IO15          |        |↔   |              |                |        |          |D0_P      |
-|  IO16          |        |↔   |              |                |        |          |D1_N      |
-|  IO17          |        |↔   |              |                |        |          |D1_P      |
-|  IO18          |        |↔   |              |                |        |          |D2_N      |
-|  IO19          |        |↔   |              |                |        |          |D2_P      |
-|                |  IO6   |↔   |              |                |        |          |HOTPLUGDET|
-|  IO20(TX)      |        |↔   |              |                |        |          |          |         |RX      |
-|  IO21(RX)      |        |↔   |              |                |        |          |          |         |TX      |
-|  IO23          |        |↔   |              |                |        |BTN1|
-|  IO22(RESERVE) |        |↔   | IO10(RESERVE)|
-|                |   IO3  |↔   | IO8(EN)      |
-|  IO26(CTS)     |        |↔   | IO5(CTS)     |
-|  IO27(RTS)     |        |↔   | IO4(RTS)     |
-|  IO28(TX)      |        |↔   | IO6(RX)      |
-|  IO29(RX)      |        |↔   | IO7(TX)      |
-|  PIN55(SD3)    |        |↔   |              |                |        |          |          |         |        |IO3     |SIO3    |   
-|  PIN58(SD2)    |        |↔   |              |                |        |          |          |         |        |IO2     |SIO2    | 
-|  PIN59(SD1)    |        |↔   |              |                |        |          |          |         |        |IO1     |SIO1    | 
-|  PIN57(SD0)    |        |↔   |              |                |        |          |          |         |        |IO0     |SIO0    | 
-|  PIN56(SCLK)   |        |↔   |              |                |        |          |          |         |        |SCLK    |SCLK    | 
-|PIN60(FLASH_CS) |        |↔   |              |                |        |          |          |         |        |IO3     |        | 
-|  IO25(RAM_CS)  |        |↔   |              |                |        |          |          |         |        |        |CS      | 
+| RP2350A         | XL9535 |     | ESP32-C6      | TFT           | SD      | BUTTON | HDMI       | QWIIC | UART1 | FLASH | DRAM |
+| --------------- | ------ | --- | ------------- | ------------- | ------- | ------ | ---------- | ----- | ----- | ----- | ---- |
+| IO0(SDA)        |        | ↔   |               | PIN47(TP_SDA) |
+| IO1(SLC)        |        | ↔   |               | PIN48(TP_SCL) |
+| IO2             |        | ↔   |               |               |         |        |            | SDA1  |
+| IO3             |        | ↔   |               |               |         |        |            | SCL1  |
+|                 | IO2    | ↔   |               | PIN50(TP_RST) |
+|                 | IO4    | ↔   |               | PIN49(TP_INT) |
+|                 | IO0    | ↔   |               | PIN35(TF_RST) |
+|                 | IO1    | ↔   |               | PIN35(TF_BL)  |
+| IO4(MISO)       |        | ↔   |               | PIN11         | SD_MISO |
+| IO6(SCK)        |        | ↔   |               | PIN8          | SD_SCK  |
+| IO7(MOSI)       |        | ↔   |               | PIN10         | SD_MOSI |
+| IO8(TFT_CS)     |        | ↔   |               | PIN6          |
+| IO9(TFT_DC)     |        | ↔   |               | PIN7          |
+| IO5(SD_CS )     |        | ↔   |               |               | SD_CS   |
+| IO12            |        | ↔   |               |               |         |        | CK_N       |
+| IO13            |        | ↔   |               |               |         |        | CK_P       |
+| IO14            |        | ↔   |               |               |         |        | D0_N       |
+| IO15            |        | ↔   |               |               |         |        | D0_P       |
+| IO16            |        | ↔   |               |               |         |        | D1_N       |
+| IO17            |        | ↔   |               |               |         |        | D1_P       |
+| IO18            |        | ↔   |               |               |         |        | D2_N       |
+| IO19            |        | ↔   |               |               |         |        | D2_P       |
+|                 | IO6    | ↔   |               |               |         |        | HOTPLUGDET |
+| IO20(TX)        |        | ↔   |               |               |         |        |            |       | RX    |
+| IO21(RX)        |        | ↔   |               |               |         |        |            |       | TX    |
+| IO23            |        | ↔   |               |               |         | BTN1   |
+| IO22(RESERVE)   |        | ↔   | IO10(RESERVE) |
+|                 | IO3    | ↔   | IO8(EN)       |
+| IO26(CTS)       |        | ↔   | IO5(CTS)      |
+| IO27(RTS)       |        | ↔   | IO4(RTS)      |
+| IO28(TX)        |        | ↔   | IO6(RX)       |
+| IO29(RX)        |        | ↔   | IO7(TX)       |
+| PIN55(SD3)      |        | ↔   |               |               |         |        |            |       |       | IO3   | SIO3 |
+| PIN58(SD2)      |        | ↔   |               |               |         |        |            |       |       | IO2   | SIO2 |
+| PIN59(SD1)      |        | ↔   |               |               |         |        |            |       |       | IO1   | SIO1 |
+| PIN57(SD0)      |        | ↔   |               |               |         |        |            |       |       | IO0   | SIO0 |
+| PIN56(SCLK)     |        | ↔   |               |               |         |        |            |       |       | SCLK  | SCLK |
+| PIN60(FLASH_CS) |        | ↔   |               |               |         |        |            |       |       | IO3   |      |
+| IO25(RAM_CS)    |        | ↔   |               |               |         |        |            |       |       |       | CS   |
 # 7️⃣ Resource
 
 * [Light Sensor datasheet](https://github.com/lewisxhe/SensorLib/blob/master/datasheet/LTR-553ALS-01.pdf)
